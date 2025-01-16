@@ -1,5 +1,8 @@
 import json
+import os
 
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -25,6 +28,7 @@ def handle_image_request(request):
 
         image_files = request.FILES.getlist('image')
         if not image_files:
+            logger.warning(f'没有提供图片文件: {str(image_files)}', exc_info=True)
             return JsonResponse({'error': '没有提供图片文件'}, status=400)
 
         # 保存图片文件
@@ -44,6 +48,7 @@ def handle_image_request(request):
         try:
             page_obj = paginator.page(page)
         except Exception:
+            logger.error(f'发生错误: {str(Exception)}', exc_info=True)
             return JsonResponse({'error': '页码无效或不存在'}, status=404)
         # 构建图片 URL 列表
         image_urls = [request.build_absolute_uri(image.image.url) for image in page_obj]
@@ -73,13 +78,29 @@ def handle_image_request(request):
                 logger.error(f'发生错误: {str(image_instance),str(image_path),str(image_url)}', exc_info=True)  # 记录错误及堆栈信息
                 return JsonResponse({"error": "图片未找到"}, status=404)
 
-            # 删除图片实例
-            image_instance.delete()
+            # 删除图片文件和数据库记录
+            # 先删除图片文件（调用 file 字段的 delete 方法）
+            # image_instance.image.delete(save=False)  # 删除存储的文件，`save=False` 防止重复保存
+            image_instance.delete()  # 删除数据库记录
 
             return JsonResponse({"message": "图片删除成功"}, status=200)
 
         except Exception as e:
+            logger.error(f'发生错误: {str(e)}', exc_info=True)
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({'error': '不支持的 HTTP 方法'}, status=405)
        # logger.error(f'发生错误: {str(e)}', exc_info=True)  # 记录错误及堆栈信息
+
+# 定义信号接收器，删除文件
+@receiver(post_delete, sender=Image)
+def delete_image_file(sender, instance, **kwargs):
+    """
+    当 Image 模型的实例被删除时，自动删除对应的文件。
+    """
+    if instance.image and os.path.isfile(instance.image.path):
+        try:
+            os.remove(instance.image.path)  # 删除文件
+            logger.info(f"成功删除文件: {instance.image.path}")
+        except Exception as e:
+            logger.error(f"删除文件失败: {instance.image.path}, 错误信息: {str(e)}", exc_info=True)

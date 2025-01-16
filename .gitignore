@@ -1,2 +1,5 @@
 media/
-output_images/
+.idea/
+db.sqlite3
+db_export.json
+django_error.log

@@ -160,7 +160,7 @@ LOGGING = {
             'encoding': 'utf-8',  # 设置日志文件的编码为 UTF-8
         },
         'console': {  # 定义一个输出日志到控制台的处理器
-            'level': 'ERROR',  # 处理 ERROR 及以上级别的日志
+            'level': 'WARNING',  # 处理 ERROR 及以上级别的日志
             'class': 'logging.StreamHandler',  # 使用 StreamHandler 类处理日志
             'formatter': 'simple',  # 使用 simple 格式器格式化日志
         },

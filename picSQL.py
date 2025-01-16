@@ -1,61 +1,59 @@
-import os
-import shutil
+import sqlite3
+import json
 
-import django
-from django.conf import settings
-from django.db import models
+def export_database_to_console_and_file(db_path, output_file):
+    try:
+        # 连接到 SQLite 数据库
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
 
-import image_manager
+        # 获取所有表名
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
 
-# 设置 Django 配置文件路径（确保用你的项目名替换 "myproject"）
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "quickBackend.settings")
+        # 创建一个存储所有表数据的字典
+        db_data = {}
 
-# 加载 Django 设置
-django.setup()
-# 假设你的Image模型是这样的
+        for table_name in tables:
+            table_name = table_name[0]
+            if table_name == "sqlite_sequence":  # 跳过 SQLite 的系统表
+                continue
 
-# class Image(models.Model):
-#     image = models.ImageField(upload_to='images/')
-#     uploaded_at = models.DateTimeField(auto_now_add=True)
-  # 导入图片模型
-from image_manager.models import Image
+            # 获取表的所有记录
+            cursor.execute(f"SELECT * FROM {table_name};")
+            rows = cursor.fetchall()
 
+            # 获取表的列名
+            cursor.execute(f"PRAGMA table_info({table_name});")
+            columns = [column[1] for column in cursor.fetchall()]
 
-# 提取并保存图片的函数
-def save_images_from_db(db_path, output_folder):
-    # 创建输出文件夹，如果文件夹不存在
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+            # 将数据存储为字典格式
+            db_data[table_name] = {
+                "columns": columns,
+                "records": rows
+            }
 
-    # 连接到数据库并查询所有图片的路径
-    from django.core.management import execute_from_command_line
-    import sys
-    sys.argv = ['manage.py', 'makemigrations']
-    execute_from_command_line(sys.argv)
+            # 输出到控制台
+            print(f"Table: {table_name}")
+            print(f"Columns: {columns}")
+            print("Records:")
+            for row in rows:
+                print(row)
+            print("-" * 50)
 
+        # 将数据保存到文件
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(db_data, f, indent=4, ensure_ascii=False)
 
-    # 查询所有图片
-    images = Image.objects.all()
+        print(f"Database records exported to {output_file} successfully!")
 
-    # 遍历查询结果并复制图片
-    for image in images:
-        # 获取图片的路径
-        image_path = image.image.path
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        conn.close()
 
-        # 确保图片文件存在
-        if os.path.exists(image_path):
-            # 生成目标文件的路径（使用图片的文件名）
-            output_image_path = os.path.join(output_folder, os.path.basename(image_path))
-
-            # 将图片复制到输出文件夹
-            shutil.copy(image_path, output_image_path)
-            print(f"Image {image.id} copied to {output_image_path}")
-        else:
-            print(f"Image {image.id} not found at {image_path}")
-
-
-# 调用函数
-db_file_path = 'db.sqlite3'  # 替换为你的SQLite数据库路径
-output_directory = 'output_images'  # 替换为你希望保存图片的文件夹路径
-
-save_images_from_db(db_file_path, output_directory)
+# 使用示例
+if __name__ == "__main__":
+    db_path = "db.sqlite3"  # 替换为你的 SQLite 数据库路径
+    output_file = "db_export.json"  # 导出的文件名
+    export_database_to_console_and_file(db_path, output_file)
