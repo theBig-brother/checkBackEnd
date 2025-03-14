@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎页面</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #ff7e5f, #feb47b);
+            color: white;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+        }
+
+        .welcome-btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: #ff6f61;
+            border: none;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .welcome-btn:hover {
+            background-color: #ff4e43;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>欢迎来到我们的页面！</h1>
+    <p>我们很高兴见到你，准备开始你的旅程吧！</p>
+    <button class="welcome-btn" onclick="alert('欢迎！')">开始</button>
+    <div class="footer">
+        <p>© 2025 欢迎页面</p>
+    </div>
+</body>
+</html>
