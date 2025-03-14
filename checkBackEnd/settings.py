@@ -133,14 +133,14 @@ LOGGING = {
     'disable_existing_loggers': False,  # 是否禁用现有的日志记录器。设置为 False，表示不会禁用已存在的日志记录器
     'handlers': {  # 日志处理器（handlers）定义了如何处理日志
         'console': {  # 定义一个名为 'console' 的处理器
-            'level': 'WARNING',  # 该处理器的日志级别为 WARNING
+            'level': 'INFO',  # 该处理器的日志级别为 WARNING
             'class': 'logging.StreamHandler',  # 使用 StreamHandler 来将日志输出到控制台（标准输出）
         },
     },
     'loggers': {  # 日志记录器（loggers）定义了日志记录的行为
         'django': {  # 只针对 Django 的日志记录器进行配置
             'handlers': ['console'],  # 关联 'console' 处理器，表示日志将输出到控制台
-            'level': 'WARNING',  # 设置记录器的日志级别为 WARNING，只记录 WARNING、ERROR 和 CRITICAL 级别的日志
+            'level': 'INFO',  # 设置记录器的日志级别为 WARNING，只记录 WARNING、ERROR 和 CRITICAL 级别的日志
             'propagate': True,  # 允许日志传播，意味着该日志记录器的日志将继续传播到父记录器（通常是根记录器）
         },
     },

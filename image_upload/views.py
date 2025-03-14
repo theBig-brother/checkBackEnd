@@ -33,7 +33,7 @@ class ImageUploadView(APIView):
     def post(self, request, *args, **kwargs):
         # 获取上传的文件
         file = request.data.get('file')
-
+        jsondata=request.data.get('json')
         if file is None:
             return Response({"detail": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
         # 读取图片文件
@@ -41,7 +41,7 @@ class ImageUploadView(APIView):
         image_file=  press(image,file.name,False)
         # print("type(image_file)",type(image_file),type(image))
         # 保存压缩后的文件到数据库
-        img_instance = Image.objects.create(path=image_file)
+        img_instance = Image.objects.create(path=image_file,jsonData=jsondata)
 
         # 使用序列化器返回上传的图片信息
         serializer = ImageSerializer(img_instance)
@@ -54,7 +54,8 @@ def press(image,name,press=True):
     if exif_data is not None:
     # 使用 piexif 来转换 EXIF 数据并将其嵌入到图像中
         exif_bytes = piexif.dump(exif_data)  # 将 EXIF 数据转换为字节流格式
-        # print("exif_bytes")
+        print("exif_bytes")
+        print(exif_data)
         # piexif.dump(exif_bytes)
 
     # 设置图片质量和压缩尺寸

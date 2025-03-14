@@ -9,6 +9,6 @@ class Image(models.Model):
                              default='default.jpg')
     # 图片的上传时间
     uploaded_at = models.DateTimeField(auto_now_add=True)
-
+    jsonData=models.JSONField(default=dict)
     def __str__(self):
         return f"Image {self.id} - {self.uploaded_at}"
