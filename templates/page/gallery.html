@@ -1,0 +1,109 @@
+{% load pagination %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+    </style>
+    <link rel="stylesheet" href="/statics/gallery.css">
+    <link rel="stylesheet" href="/statics/public/initialize.css">
+</head>
+
+<body>
+<div class="Layout">
+    <header>
+        <h2>工地安全检查图库</h2>
+    </header>
+    <main>
+        <div class="gallery-box">
+            {% for i in lists %}
+                <div class="gallery-item">
+                    <img src={{ i.Path }} class="thumbnail">
+                    <button class="deleteBtn" data-id="{{ i.ID }}">DELETE</button>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+    <footer class="footer">
+        <ul id="pagination">
+            <div class="left"><a href="#prev">&laquo;</a></div>
+            {% for i in pages|to %}
+                <li class="{% if i == current_page %}active{% endif %}">
+                    <a href="?page={{ i }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+            <div class="right">
+                <a href="#next">&raquo;</a>
+            </div>
+        </ul>
+    </footer>
+</div>
+<div id="imageModal" class="modal">
+    <span class="close" id="closeModal">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+</body>
+<script type="module">
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+    const thumbnails = document.querySelectorAll(".thumbnail");
+    const closeBtn = document.getElementById("closeModal");
+    thumbnails.forEach(img => {
+        img.addEventListener("click", function () {
+            modal.style.display = "block";
+            modalImg.src = this.src;
+        });
+    });
+    closeBtn.onclick = function () {
+        modal.style.display = "none";
+    }
+    // 点击遮罩层也可以关闭
+    modal.onclick = function (e) {
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+    // 通过事件委托为所有按钮绑定事件监听器
+    const deleteBtns = document.querySelectorAll('.deleteBtn')
+    deleteBtns.forEach(deleteBtn => {
+        deleteBtn.addEventListener('click', function (event) {
+            if (event.target && event.target.matches('button.deleteBtn')) {
+                const id = event.target.getAttribute('data-id'); // 获取按钮的 data-id 属性
+                console.log("id", id)
+                deleteItem(id); // 调用删除函数
+            }
+        });
+    })
+
+var a=` 'X-CSRFToken': getCookie('csrftoken'),`
+   function deleteItem(id) {
+    fetch('http://127.0.0.1:8000/delete/', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: id }),
+    })
+    .then(res => {
+        // 检查响应的 Content-Type 是否为 JSON 格式
+        if (res.ok && res.headers.get('Content-Type').includes('application/json')) {
+            return res.json();  // 如果是 JSON 格式，解析它
+        } else {
+            return res.text();  // 否则返回文本数据
+        }
+    })
+    .then(data => {
+        console.log(data);  // 打印响应数据
+    })
+    .catch(error => {
+        console.error('请求失败:', error);  // 捕获并处理任何错误
+    });
+}
+
+</script>
+</html>

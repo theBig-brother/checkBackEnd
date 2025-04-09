@@ -1,16 +1,61 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-      {% load static %}
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
-    <script type="module" crossorigin src="{% static 'assets/index-Cuh69Br-.js'%}"></script>
-    <link rel="stylesheet" crossorigin href="{% static 'assets/index-CJga_oJY.css'%}">
-  </head>
-  <body>
-    <div id="root"></div>
+{% load static %}
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/svg+xml" href="/webstorm-icon-logo.svg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>quickManage</title>
+    <link rel="stylesheet" href="/statics/public/initialize.css">
+    <link rel="stylesheet" href="/statics/src/index.css">
+    <link rel="stylesheet" href="/statics/src/sidebar.css">
+</head>
+<body>
+<div id="app">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img class="sidebar-logo" src="/statics/public/webstorm-icon-logo.svg" alt="WebStorm logo">
+            <span>QuickManage</span>
+        </div>
+        <ul class="sidebar-menu">
+            {% for item in menuItems %}
+                {% if forloop.first %}
+                    <li class="sidebar-menu-item sidebar-menu-item-active">
+                        <a href="{{ item.url }}" target="contentFrame">
+                            <img src={{ item.icon }} alt="">
+                            {{ item.value }}</a>
+                    </li>
+                {% else %}
+                    <li class="sidebar-menu-item">
+                        <a href="{{ item.url }}" target="contentFrame">
+                            <img src={{ item.icon }} alt="">
+                            {{ item.value }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <div class="sidebar-footer"><button class="sidebar-close">&lt;</button></div>
 
-  </body>
+    </aside>
+    <main class="main">
+        <div class="Content">
+            <iframe src="{{ defaultUrl }}" name="contentFrame" class="router"></iframe>
+        </div>
+    </main>
+</div>
+</body>
+<script type="module">
+
+    const lis = document.querySelectorAll(".sidebar-menu-item");
+
+    lis.forEach(li => {
+        li.addEventListener("click", () => {
+            // 先移除所有的 background
+            lis.forEach(item => item.classList.remove("sidebar-menu-item-active"));
+            // 当前点击的添加背景
+            li.classList.add("sidebar-menu-item-active");
+        });
+    });
+
+</script>
 </html>

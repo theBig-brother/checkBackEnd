@@ -3,8 +3,8 @@ from django.http import HttpResponse
 
 def hello(request):
     # return HttpResponse("Hello world ! ")
-    # return render(request, 'hello.html')
-    return render(request, 'index.html')
+    return render(request, 'hello.html')
+    # return render(request, 'index1.html')
 
 
 from django.shortcuts import render

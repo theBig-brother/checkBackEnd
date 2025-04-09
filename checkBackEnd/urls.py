@@ -23,9 +23,10 @@ from . import views
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path("", views.hello, name="hello"),
+                  path('', include('quickManage.urls')),
+                  # path("", views.hello, name="hello"),
                   path('runoob/', views.runoob),
                   path('upload/', ImageUploadView.as_view(), name='image-upload'),
-                  path('management/',include('management_api.urls'), name='management'),
+                  # path('management/',include('management_api.urls'), name='management'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # 开发模式下服务媒体文件

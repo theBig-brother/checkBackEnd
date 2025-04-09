@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'image_upload',
-    "management_api"
+    "management_api",
+    "quickManage"
 ]
 
 MIDDLEWARE = [
@@ -70,6 +71,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            "libraries": {  # 自定义过滤器
+                'pagination': 'templatetags.pagination'  # 添加这边三行配置
+            }  # 添加这边三行配置
         },
     },
 ]
@@ -118,16 +122,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'statics/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # 将 React 构建的静态文件加入
+    os.path.join(BASE_DIR, 'statics'),  # 将 React 构建的静态文件加入
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#LOGGING
+# LOGGING
 LOGGING = {
     'version': 1,  # 日志配置的版本号，1表示标准配置
     'disable_existing_loggers': False,  # 是否禁用现有的日志记录器。设置为 False，表示不会禁用已存在的日志记录器
@@ -146,3 +150,8 @@ LOGGING = {
     },
 }
 
+# iframe权限，有3个值：
+# DENY	不允许任何页面通过 iframe 加载（默认值）
+# SAMEORIGIN	允许同域页面通过 iframe 加载
+# ALLOWALL	所有页面都允许被 iframe 加载（不安全）
+X_FRAME_OPTIONS = 'SAMEORIGIN'
